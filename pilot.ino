@@ -3,6 +3,7 @@
 // Define the service and characteristic UUIDs
 const char* serviceUuid = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* charUuid    = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
+const char* deviceName  = "L7161";
 
 void setup() {
   // Begin serial communication
@@ -17,7 +18,7 @@ void setup() {
   Serial.println("BLE initialized. Scanning...");
   
   // Start scanning for peripherals
-  BLE.scanForName("L7161"); 
+  BLE.scanForName(deviceName); 
 }
 
 void loop() {
@@ -38,7 +39,7 @@ void loop() {
       Serial.println("Connected to peripheral");
 
       Serial.print("Discover Attributes:");
-      Serial.println(peripheral.discoverAttributes()); // For some reason always is 0
+      Serial.println(peripheral.discoverAttributes()); // For some reason always 0
 
       Serial.print("Discover Service:");
       Serial.println(peripheral.discoverService(serviceUuid));
@@ -61,17 +62,13 @@ void loop() {
               Serial.print("Value: ");
               Serial.println(colorHex);
 
-              if (1) { // check if it's a valid HEX color code
-                byte r = (byte)strtol(colorHex.substring(0, 2).c_str(), NULL, 16);
-                byte g = (byte)strtol(colorHex.substring(2, 4).c_str(), NULL, 16);
-                byte b = (byte)strtol(colorHex.substring(4, 6).c_str(), NULL, 16);
+              byte r = (byte)strtol(colorHex.substring(0, 2).c_str(), NULL, 16);
+              byte g = (byte)strtol(colorHex.substring(2, 4).c_str(), NULL, 16);
+              byte b = (byte)strtol(colorHex.substring(4, 6).c_str(), NULL, 16);
 
-                byte colorCommand[] = {0x55, 0x07, 0x00, r, g, b};
-                nusChar.writeValue(colorCommand, sizeof(colorCommand));
-                Serial.println("RGB data sent.");
-              } else {
-                Serial.println("Invalid input. Enter RGB in 6-character HEX format (e.g., FF0000 for red).");
-              }
+              byte colorCommand[] = {0x55, 0x07, 0x00, r, g, b};
+              nusChar.writeValue(colorCommand, sizeof(colorCommand));
+              Serial.println("RGB data sent.");
             }
           }
         }
@@ -85,6 +82,6 @@ void loop() {
     
     // Resume scanning
     Serial.println("Starting rescan..");
-    BLE.scanForName("L7161");
+    BLE.scanForName(deviceName);
   }
 }
